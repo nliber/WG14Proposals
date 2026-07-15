@@ -3,6 +3,7 @@ title: "Removing `strncpy`"
 document: D0000a
 date: 2026-07-06
 audience: WG14
+project: "Programming Language C"
 author:
     - name: Nevin ":-)" Liber
       email: <nliber@anl.gov>
@@ -16,6 +17,7 @@ First proposed.
 # Motivation and Scope
 
 `strncpy` is a terrible, error-prone, memory-unsafe, poorly-named, insecure function.  It is long past time we remove it.
+
 
 ## History
 
@@ -56,6 +58,7 @@ may write *more* characters than `strcpy` for the same `s2`.
 - `strncpy(s1, s2, n)` does not guarantee that the memory pointed to by `s1` is null-terminated.
 In other words, even though `strncpy(s1, s2, n)` is in `<string.h>` and starts with the prefix `str`,
 it doesn't guarantee that the resultant `s1` (and by extension, what it returns) represents a string.
+
 
 Because it was so error-prone and the cause of a field issue, the company policy changed to ban the use of `strncpy`.
 
@@ -140,15 +143,22 @@ Why?  Linus Torvalds wrote in [Linux Kernel Commit: strncpy removal](https://git
 
 ## Isn't this a breaking change?
 
-Yes it is (but it isn't a quiet change), which means we have to weigh the tradeoff of that against other factors.
-If we continue to leave it in, we *know* it leads to application vulnerabilities,
-code which is incorrectly reasoned about with respect to security and reliability,
-and makes it harder to write memory safe and functional safe code.
+Yes it is (but it isn't a quiet change), which means we have to weigh the tradeoff of that against doing nothing.
+If we continue to leave it in, we *know* it leads to:
 
+- Application vulnerabilities.
+- Incorrectly reasoned about code with respect to security and reliability.
+- Impediment to writing memory safe and functional safe code.
+ 
 ## Why not mitigate it via education?
 
 We've had over 4½ decades attempting to educate the world on this.  Education hasn't worked as a general mitigation strategy.
-No amount of education can make up for a function that is easy to use incorrectly and hard to use correctly.
+There have been endless warnings in compiler diagnostics, static analysis tools, textbooks, coding standards, blog posts and conference talks.
+
+- No amount of education can make up for a function that is easy to use incorrectly and hard to use correctly.
+- Education doesn't make up for the implicit assumptions in its name.
+The name `strncpy` implies it is safer to use than `strcpy`, even thought it is anything but safer.
+- Education doesn't scale.  Every new generation of C developer ends up learning this lesson for themselves.
 
 ## Why not add a new string type with a safe API?
 
@@ -157,52 +167,173 @@ has no guarantee of actually being agreed upon and adopted by the members of WG1
 and still doesn't address this problem, as it will stick around as long as
 `strncpy` is a WG14-blessed function.
 
-## We could just deprecated it.
+Specifically:
+
+- Timeline.  Doing so will take years.  In general, this is the right solution for changing an international standard
+that millions of developers are reliant upon.  But the problems of `strncpy` are hazardous to production code
+*today*, and we should both acknowledge and address that fact.
+
+- No guarantee of adoption.  There are many hard questions around designing a string class
+(or string classes, since it is unlikely we can come up with a universal one that meets all needs),
+and no assurance that WG14 can ever come to consensus on a solution.  Things like memory ownership,
+allocation strategies, interaction with existing APIs, etc will all be contentious and take
+much effort to come to consensus.
+
+- It does not solve the problem.  Unless and until `strncpy` is removed, people will continue to use it.
+Developing a new string type or types is independent of removing `strncpy`.  If it is in the standard,
+the world views it at WG14 endorsing it.
+
+## We could just deprecate it.
 
 We could, but that is a weak choice.  How many more years/decades should WG14 ignore that this has been a real world
 problem for decades that should be addressed?
+
+- How many more decades before removal?  If not now, at what point does WG14 remove it, acknowledging that
+there are real, serious problems caused by `strncpy` and the time for half measures has passed?
+
+- Deprecation alone does not work.  We saw that with `gets`.  Even though that was deprecated in C99,
+it still showed up in new code until it was removed over a decade later in C11.
+
+- Deprecation puts the burden on developers, not WG14.  We leave it up to every developer and every organization
+to decide this is a flawed function, and we know the problems that causes.
+
+We are not lacking evidence that this function should be removed;
+the only thing lacking is our willingness to act on it.
 
 ## Shouldn't we deprecate it and replace it with something better?
 
 Again, that would be nice, but really isn't much different than the problems we
 have introducing a new string type.  
 
-The Linux Kernel replaced `strncpy` with *seven* different functions:
-
-- `strscpy()` when the destination must be NUL-terminated.
-- `strscpy_pad()` when the destination must be NUL-terminated and
-  zero-padded (for example, for structs crossing privilege boundaries).
-- `memtostr()` for NUL-terminated destinations copied from
-  non-NUL-terminated fixed-width sources, with the `__nonstring`
-  attribute on the source.
-- `memtostr_pad()` for the same case, but with zero-padding.
-- `strtomem()` for non-NUL-terminated fixed-width destinations, with
-  the `__nonstring` attribute on the destination.
-- `strtomem_pad()` for non-NUL-terminated destinations that also need
-  zero-padding.
-- `memcpy_and_pad()` for bounded copies from potentially unterminated
-  sources where the destination size is a runtime value.
-
-Would WG14 standardize those?  When?
+The Linux Kernel replaced `strncpy` with *seven* different functions.  How long would
+it take WG14 to agree on something similar?  Certainly not in time for C29.
 
 I'm not saying we shouldn't pursue a replacement (we should),
 but we shouldn't wait for it.  Perfect is the enemy of good.
 
 ## Is this just a token effort?
 
-## Implementors will keep it around anyway
+This is a small, achievable step, which is its value.
 
-## We have precedent
+- It is not insignificant.  This is one of the most misused function in standard C.
+- This is a small effort that has a big benefit.
+- It signals to the community that we are taking memory safety problems seriously.
 
+## Implementors will keep it around anyway.
 
+- They almost certainly will.  This is normal and expected.
+But they can put it behind a compiler flag or equivalent should they so choose,
+and point to the standard as a strong reason for code, especially new code, not to use it.
+- Removal allows them to make it opt-in. Developers will have to deliberately choose to use it.
+- Correct, portable code can no longer use it.  Developers and organizations that care about
+those things can also point to the standard as a reason to stop using it.
+
+## We have precedent with `gets`.
+
+`gets` was removed, and the sky did not fall.  All the concerns about breaking existing code (it did),
+education, what implementations would do, etc., were valid but ultimately proved to be manageable.
+
+- The remove of `gets` is considered to be an unmitigated success.
+- The case to remove `strncpy`, in some ways, is even stronger.  It appears to be safer (because it is bounded),
+but it turns out to be subtlely unsafe.
+- The objections are the same.  There are no new arguments being made against removing `strncpy` that weren't
+being made against removing `gets`.
+- WG14 established a priniciple with removing `gets` that it will not
+perpetuate functions that actively cause harm.  That principle shouldn't just be a one off.
+
+## What about `strncpy_s`?
+
+It is out of scope for this proposal, as it does not share the same defects as `strncpy`.
+
+- It guarantees null-termination of the destination buffer.
+- It validates its parameters at runtime.
+- It returns an error code on failure.
+
+# Proposed Wording
+
+All edits are relative to [N3886](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3886.pdf).
+
+## Modify §7.28.2 [Copying functions]
+
+In §7.28.2, remove subclause 5:
+
+::: rm
+
+7.28.2.5 The `strncpy` function
+
+Synopsis
+
+```c
+#include <string.h>
+char *strncpy(char * restrict s1, const char * restrict s2, size_t n);
+```
+
+Description
+
+The `strncpy` function copies not more than `n` characters (characters
+that follow a null character are not copied) from the array pointed to
+by `s2` to the array pointed to by `s1`.^329)^ If the array pointed to by
+`s2` is a string that is shorter than `n` characters, null characters
+are appended to the copy in the array pointed to by `s1`, until `n`
+characters in all have been written.
+
+Returns
+
+The `strncpy` function returns the value of `s1`.
+
+:::
+
+Remove footnote 329:
+
+::: rm
+
+^329)^ Thus, if there is no null character in the first `n` characters of the array pointed to by `s2`,
+the result will not be null-terminated.
+
+:::
+
+## Modify §B.27 [String handling `<string.h>`]
+
+Remove the following declaration:
+
+::: rm
+
+```c
+char *strncpy(char * restrict s1, const char * restrict s2, size_t n);
+```
+
+:::
+
+## Modify §M.2 [Changes from previous revisions]
+
+Add the following bullet to the list of changes:
+
+::: add
+
+The `strncpy` function has been removed.
+
+:::
+
+## Modify the Index
+
+Remove the entry for `strncpy`.
+
+# Conclusion
+
+`strncpy` may have been a reasonable function for directory entries in 1979.
+It is not a reasonable function for a security-conscious world in 2026, let alone 2029.
+
+The cost of removal is a compiler error and a one-time code change. The
+cost of inaction is measured in CVEs.
+
+When the committee removed `gets`, it established a principle: the
+standard should not endorse functions that are known to cause systematic
+harm. `strncpy` meets that bar. The principle should be applied
+consistently.
 
 # Acknowledgements
 Nevin Liber was supported by the Office of Science, U.S. Department of Energy, under contract DE-AC02-06CH11357.
 
-# References
-- [N5050](https://wg21.link/n5050) Working Draft, Programming Languages -- C++
-- [N3406](https://wg21.link/n3406) A proposal to add a utility class to represent optional objects (Revision 2)
-- [P0653](https://wg21.link/p0653) Utility to convert a pointer to a raw pointer
-- [P2988](https://wg21.link/p2988) `std::optional<T&>`{.cpp}
-- [P4189](https://wg21.link/p4189) `get()`{.cpp}ing the pointer from `optional`{.cpp}
-- [P4261](https://wg21.link/p4261) Presentation for P4189 `get()`{.cpp}ing the pointer from `optional`{.cpp}
+All the (non-quoted) ideas are mine or based on discussions,
+but I did use Claude Opus 4.6 and a thesaurus to inspire more compelling ways to phrase and present them.
+
