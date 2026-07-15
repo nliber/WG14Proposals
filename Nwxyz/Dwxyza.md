@@ -1,7 +1,7 @@
 ---
 title: "Removing `strncpy`"
 document: D0000a
-date: 2026-07-06
+date: 2026-07-15
 audience: WG14
 project: "Programming Language C"
 author:
@@ -17,7 +17,6 @@ First proposed.
 # Motivation and Scope
 
 `strncpy` is a terrible, error-prone, memory-unsafe, poorly-named, insecure function.  It is long past time we remove it.
-
 
 ## History
 
@@ -43,7 +42,7 @@ it was added when ANSI C was first standardized:
 > Programming Language — C*,
 > §4.11.2.4](https://www.lysator.liu.se/c/rat/d11.html#4-11-2-4)
 
-### Personal Experience
+## Personal Experience
 
 Back in the early 2000s (long before having lofty aspirations of becoming a member of this committee),
 this author was debugging a production issue directly caused by the use of `strncpy`.
@@ -62,7 +61,7 @@ it doesn't guarantee that the resultant `s1` (and by extension, what it returns)
 
 Because it was so error-prone and the cause of a field issue, the company policy changed to ban the use of `strncpy`.
 
-### Common Vulnerabilities and Exposures (CVEs)
+## Common Vulnerabilities and Exposures (CVEs)
 
 A simple search finds that `strncpy` has been the cause of no less than **fifteen** CVEs:
 
@@ -124,7 +123,7 @@ A simple search finds that `strncpy` has been the cause of no less than **fiftee
   kernel strncpy in Linux 2.4/2.5 did not null-pad the buffer on non-x86
   architectures, leading to information leaks.
 
-### Linux Kernel
+## Linux Kernel
 
 Most recently (2026-06-19), the Linux kernel has removed `strncpy` from its codebase.
 Why?  Linus Torvalds wrote in [Linux Kernel Commit: strncpy removal](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=1a3746ccbb0a97bed3c06ccde6b880013b1dddc1):
