@@ -181,7 +181,7 @@ much effort to come to consensus.
 
 - It does not solve the problem.  Unless and until `strncpy` is removed, people will continue to use it.
 Developing a new string type or types is independent of removing `strncpy`.  If it is in the standard,
-the world views it at WG14 endorsing it.
+the world views it as WG14 endorsing it.
 
 ## We could just deprecate it.
 
@@ -205,8 +205,23 @@ the only thing lacking is our willingness to act on it.
 Again, that would be nice, but really isn't much different than the problems we
 have introducing a new string type.  
 
-The Linux Kernel replaced `strncpy` with *seven* different functions.  How long would
-it take WG14 to agree on something similar?  Certainly not in time for C29.
+The Linux Kernel replaced `strncpy` with *seven* different functions:
+
+- `strscpy()` when the destination must be NUL-terminated.
+- `strscpy_pad()` when the destination must be NUL-terminated and 
+  zero-padded (for example, for structs crossing privilege boundaries).
+- `memtostr()` for NUL-terminated destinations copied from
+  non-NUL-terminated fixed-width sources, with the `__nonstring`
+  attribute on the source.
+- `memtostr_pad()` for the same case, but with zero-padding.
+- `strtomem()` for non-NUL-terminated fixed-width destinations, with
+  the `__nonstring` attribute on the destination.
+- `strtomem_pad()` for non-NUL-terminated destinations that also need
+  zero-padding.
+- `memcpy_and_pad()` for bounded copies from potentially unterminated
+  sources where the destination size is a runtime value.
+
+How long would it take WG14 to agree on something similar?  Certainly not in time for C29.
 
 I'm not saying we shouldn't pursue a replacement (we should),
 but we shouldn't wait for it.  Perfect is the enemy of good.
@@ -215,7 +230,7 @@ but we shouldn't wait for it.  Perfect is the enemy of good.
 
 This is a small, achievable step, which is its value.
 
-- It is not insignificant.  This is one of the most misused function in standard C.
+- It is not insignificant.  This is one of the most misused functions in standard C.
 - This is a small effort that has a big benefit.
 Removing `strncpy` eliminates an entire class of misuse that has persisted for decades.
 - It signals to the community that we are taking memory safety problems seriously.
@@ -240,7 +255,7 @@ but it turns out to be subtly unsafe.
 - The objections are the same.  There are no new arguments being made against removing `strncpy` that weren't
 being made against removing `gets`.
 - WG14 established a principle with removing `gets` that it will not
-perpetuate functions that actively cause harm.  That principle shouldn't just be a one off.
+perpetuate functions that actively cause harm.  That principle shouldn't just be a one-off.
 
 ## What about `strncpy_s`?
 
