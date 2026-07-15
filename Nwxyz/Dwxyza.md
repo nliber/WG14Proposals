@@ -157,7 +157,7 @@ There have been endless warnings in compiler diagnostics, static analysis tools,
 
 - No amount of education can make up for a function that is easy to use incorrectly and hard to use correctly.
 - Education doesn't make up for the implicit assumptions in its name.
-The name `strncpy` implies it is safer to use than `strcpy`, even thought it is anything but safer.
+The name `strncpy` implies it is safer to use than `strcpy`, even though it is anything but safer.
 - Education doesn't scale.  Every new generation of C developer ends up learning this lesson for themselves.
 
 ## Why not add a new string type with a safe API?
@@ -217,6 +217,7 @@ This is a small, achievable step, which is its value.
 
 - It is not insignificant.  This is one of the most misused function in standard C.
 - This is a small effort that has a big benefit.
+Removing `strncpy` eliminates an entire class of misuse that has persisted for decades.
 - It signals to the community that we are taking memory safety problems seriously.
 
 ## Implementors will keep it around anyway.
@@ -233,12 +234,12 @@ those things can also point to the standard as a reason to stop using it.
 `gets` was removed, and the sky did not fall.  All the concerns about breaking existing code (it did),
 education, what implementations would do, etc., were valid but ultimately proved to be manageable.
 
-- The remove of `gets` is considered to be an unmitigated success.
+- The removal of `gets` is considered to be an unqualified success.
 - The case to remove `strncpy`, in some ways, is even stronger.  It appears to be safer (because it is bounded),
-but it turns out to be subtlely unsafe.
+but it turns out to be subtly unsafe.
 - The objections are the same.  There are no new arguments being made against removing `strncpy` that weren't
 being made against removing `gets`.
-- WG14 established a priniciple with removing `gets` that it will not
+- WG14 established a principle with removing `gets` that it will not
 perpetuate functions that actively cause harm.  That principle shouldn't just be a one off.
 
 ## What about `strncpy_s`?
@@ -248,6 +249,8 @@ It is out of scope for this proposal, as it does not share the same defects as `
 - It guarantees null-termination of the destination buffer.
 - It validates its parameters at runtime.
 - It returns an error code on failure.
+
+The status of Annex K is an independent question that should be evaluated on its own merits.
 
 # Proposed Wording
 
