@@ -1,1 +1,1 @@
-include ../../wg21/paper.mk
+include ../wg21/paper.mk
