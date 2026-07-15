@@ -338,7 +338,7 @@ Remove the entry for `strncpy`.
 
 # Conclusion
 
-`strncpy` may have been a reasonable function for directory entries in 1979.
+`strncpy` may have been a reasonable function for PDP-11 directory entries in 1979.
 It is not a reasonable function for a security-conscious world in 2026, let alone 2029.
 
 The cost of removal is a compiler error and a one-time code change. The
