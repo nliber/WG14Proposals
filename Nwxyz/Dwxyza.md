@@ -355,3 +355,25 @@ Nevin Liber was supported by the Office of Science, U.S. Department of Energy, u
 All the (non-quoted) ideas are mine or based on discussions,
 but I did use Claude Opus 4.6 and a thesaurus to inspire more compelling ways to phrase and present them.
 
+# References
+
+- [N3886](https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3886.pdf) — Working Draft, C2y.
+- [*The C Programming Language*](https://archive.org/details/cprogramminglang0000kern) — Brian W. Kernighan and Dennis M. Ritchie, 1978.
+- [*Rationale for American National Standard for Information Systems — Programming Language — C*, §4.11.2.4](https://www.lysator.liu.se/c/rat/d11.html#4-11-2-4)
+- [Linux Kernel Commit: strncpy removal](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=1a3746ccbb0a97bed3c06ccde6b880013b1dddc1)
+- [CVE-2026-40334](https://nvd.nist.gov/vuln/detail/CVE-2026-40334)
+- [CVE-2026-23749](https://nvd.nist.gov/vuln/detail/CVE-2026-23749)
+- [CVE-2026-9265](https://nvd.nist.gov/vuln/detail/CVE-2026-9265)
+- [CVE-2025-6334](https://nvd.nist.gov/vuln/detail/CVE-2025-6334)
+- [CVE-2024-54809](https://nvd.nist.gov/vuln/detail/CVE-2024-54809)
+- [CVE-2024-39480](https://nvd.nist.gov/vuln/detail/cve-2024-39480)
+- [CVE-2024-27224](https://nvd.nist.gov/vuln/detail/cve-2024-27224)
+- [CVE-2024-3119](https://nvd.nist.gov/vuln/detail/CVE-2024-3119)
+- [CVE-2020-13995](https://nvd.nist.gov/vuln/detail/CVE-2020-13995)
+- [CVE-2019-11365](https://nvd.nist.gov/vuln/detail/CVE-2019-11365)
+- [CVE-2019-9125](https://nvd.nist.gov/vuln/detail/CVE-2019-9125)
+- [CVE-2018-3878](https://nvd.nist.gov/vuln/detail/CVE-2018-3878)
+- [CVE-2018-3874](https://nvd.nist.gov/vuln/detail/cve-2018-3874)
+- [CVE-2004-0500](https://nvd.nist.gov/vuln/detail/CVE-2004-0500)
+- [CVE-2003-0465](https://nvd.nist.gov/vuln/detail/cve-2003-0465)
+
